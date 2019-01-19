@@ -35,6 +35,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // create notes table
         db.execSQL(Student.CREATE_TABLE);
+        db.execSQL(User.CREATE_TABLE);
 
     }
 
@@ -43,17 +44,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + Student.TABLE_NAME);
-
+        db.execSQL("DROP TABLE IF EXISTS " + User.TABLE_NAME);
         // Create tables again
         onCreate(db);
+    }
+
+    public void deleteAllUsers(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DROP TABLE IF EXISTS " + User.TABLE_NAME);
+        onCreate(db);
+
     }
 
     public void deleteAllStudent(){
 
         SQLiteDatabase db = this.getWritableDatabase();
-
         db.execSQL("DROP TABLE IF EXISTS " + Student.TABLE_NAME);
-
         // Create tables again
         onCreate(db);
     }
@@ -88,6 +94,40 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // return newly inserted row id
         return id;
+    }
+
+    public long insertUser(int userId, String username, String password){
+
+        // get writable database as we want to write data
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(User.COLUMN_ID, userId);
+        values.put(User.COLUMN_USERNAME, username);
+        values.put(User.COLUMN_PASSWORD, password);
+
+        long id =  db.insert(User.TABLE_NAME, null, values);
+
+        return id;
+    }
+
+    public User searchUser(String username, String password){
+
+        User user = new User();
+
+        String selectQuery = "SELECT * FROM " + User.TABLE_NAME + " WHERE " + User.COLUMN_USERNAME + " = " + "'" + username + "'" + " AND "
+                + User.COLUMN_PASSWORD + " = " + "'" + password + "'";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if(cursor.moveToFirst()){
+            user.setId(cursor.getInt(cursor.getColumnIndex(User.COLUMN_ID)));
+            user.setUsername(cursor.getString(cursor.getColumnIndex(User.COLUMN_USERNAME)));
+            user.setPassword(cursor.getString(cursor.getColumnIndex(User.COLUMN_PASSWORD)));
+        }
+
+        return user;
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

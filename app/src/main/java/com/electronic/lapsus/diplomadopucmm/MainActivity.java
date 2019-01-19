@@ -15,11 +15,17 @@ public class MainActivity extends AppCompatActivity {
     Button login;
     TextView user;
     TextView password;
+    private DatabaseHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        db = new DatabaseHelper(this);
+
+        db.insertUser(1, "lapsus", "lapsus123");
+        db.insertUser(2, "stefan", "stefan123");
 
         clear = findViewById(R.id.btnClear);
         login = findViewById(R.id.btnLogin);
@@ -40,9 +46,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                user.setText("lapsus");
-                password.setText("lapsus123");
-
                 boolean success = validateUserAndPass(user != null ? user.getText().toString() : "",
                         password != null ? password.getText().toString() : "");
 
@@ -60,8 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(!user.isEmpty() && !password.isEmpty()){
 
-            if(user.equals("lapsus") && password.equals("lapsus123")){
-
+            if(db.searchUser(user, password) != null){
                 return true;
             }else{
                 Toast.makeText(this, "Usuario o Contraseña incorrecta", Toast.LENGTH_LONG).show();

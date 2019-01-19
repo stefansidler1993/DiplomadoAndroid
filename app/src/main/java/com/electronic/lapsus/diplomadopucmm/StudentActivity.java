@@ -33,8 +33,6 @@ public class StudentActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student);
 
-        db.deleteAllStudent();
-
         db = new DatabaseHelper(this);
 
         db.insertStudent(new Integer(R.drawable.student0),"Stephanie Mendez", "Femenino", LocalDateTime.of(1996, 11, 16, 0, 0,0), "Contabilidad", "Los prados", false);
